@@ -3,121 +3,267 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nexus Games - Unblocked Hub</title>
+    <title>SYSTEM INTERFACE - Game Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      body { font-family: 'Inter', sans-serif; }
+      :root {
+        /* Pip-Boy Colors */
+        --pip-green: #1aff1a;
+        --pip-green-dim: rgba(26, 255, 26, 0.2);
+        --pip-bg: #0a0a0a;
+        
+        /* ECHO Device Colors */
+        --echo-cyan: #00ffff;
+        --echo-blue: #0066ff;
+        --echo-orange: #ff9900;
+        --echo-bg: #050a10;
+        --echo-cyan-dim: rgba(0, 255, 255, 0.1);
+      }
+      
+      /* Base Theme Styles */
+      body { 
+        transition: background-color 0.5s, color 0.5s;
+        overflow-x: hidden;
+      }
+
+      /* Pip-Boy Theme */
+      body.theme-pipboy {
+        font-family: 'VT323', monospace; 
+        background-color: var(--pip-bg);
+        color: var(--pip-green);
+        text-shadow: 0 0 5px var(--pip-green);
+      }
+
+      body.theme-pipboy::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 100;
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+      }
+
+      /* ECHO Device Theme */
+      body.theme-echo {
+        font-family: 'Rajdhani', sans-serif;
+        background-color: var(--echo-bg);
+        color: var(--echo-cyan);
+        text-shadow: 0 0 8px var(--echo-cyan);
+        background-image: 
+          radial-gradient(circle at 50% 50%, rgba(0, 102, 255, 0.05) 0%, transparent 80%),
+          linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 100% 100%, 30px 30px, 30px 30px;
+      }
+
+      body.theme-echo::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 3px);
+        z-index: 100;
+        pointer-events: none;
+      }
+
+      /* CRT Flicker */
+      @keyframes flicker {
+        0% { opacity: 0.97; }
+        5% { opacity: 0.95; }
+        10% { opacity: 0.9; }
+        100% { opacity: 1; }
+      }
+      
+      .theme-pipboy #app { animation: flicker 0.15s infinite; }
+
+      /* ECHO Glitch Effect */
+      @keyframes echo-glitch {
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-2px, -2px); }
+        60% { transform: translate(2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        100% { transform: translate(0); }
+      }
+      .theme-echo .glitch-hover:hover { animation: echo-glitch 0.2s infinite; }
+
+      /* Buttons */
+      .pip-button {
+        background: transparent;
+        border: 1px solid var(--pip-green);
+        color: var(--pip-green);
+        text-transform: uppercase;
+      }
+      .pip-button:hover, .pip-button.active {
+        background: var(--pip-green);
+        color: var(--pip-bg);
+        box-shadow: 0 0 15px var(--pip-green);
+      }
+
+      .echo-button {
+        background: rgba(0, 255, 255, 0.05);
+        border: 2px solid var(--echo-cyan);
+        color: var(--echo-cyan);
+        text-transform: uppercase;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        padding: 0.5rem 2rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+      .echo-button:hover, .echo-button.active {
+        background: var(--echo-cyan);
+        color: var(--echo-bg);
+        box-shadow: 0 0 20px var(--echo-cyan);
+      }
+
+      /* Theme Switcher */
+      #theme-switcher {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+      }
+
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: currentColor; }
+
+      input::placeholder { color: inherit; opacity: 0.3; }
     </style>
   </head>
-  <body class="min-h-screen bg-[#f5f5f5] text-[#1a1a1a] selection:bg-emerald-100 selection:text-emerald-900">
-    <div id="app">
+  <body class="min-h-screen theme-pipboy">
+    <div id="theme-switcher">
+      <button id="toggle-theme" class="w-16 h-16 rounded-full border-2 flex items-center justify-center bg-black/50 backdrop-blur-md transition-all hover:scale-110 shadow-lg">
+        <i data-lucide="refresh-cw" class="w-8 h-8"></i>
+      </button>
+    </div>
+    <div id="app" class="relative z-10">
       <!-- Navigation -->
-      <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-black/5 px-6 py-4">
+      <nav class="sticky top-0 z-40 bg-black/80 backdrop-blur-sm border-b-2 border-current px-6 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div id="logo" class="flex items-center gap-2 cursor-pointer">
-            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <i data-lucide="gamepad-2" class="text-white w-6 h-6"></i>
+          <div id="logo" class="flex items-center gap-4 cursor-pointer">
+            <div class="w-12 h-12 border-2 border-current flex items-center justify-center shadow-[0_0_10px_currentColor]">
+              <i id="logo-icon" data-lucide="radio" class="w-8 h-8"></i>
             </div>
-            <h1 class="text-xl font-bold tracking-tight">NEXUS<span class="text-emerald-500">GAMES</span></h1>
+            <div>
+              <h1 id="app-title" class="text-3xl font-bold tracking-widest leading-none">PIP-BOY 3000</h1>
+              <p id="app-subtitle" class="text-xs tracking-[0.3em] opacity-70">VAULT-TEC INDUSTRIES</p>
+            </div>
           </div>
 
           <div class="relative flex-1 max-w-md">
-            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/40"></i>
+            <i id="search-icon" data-lucide="terminal" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"></i>
             <input
               id="search-input"
               type="text"
-              placeholder="Search games by title..."
-              class="w-full pl-10 pr-10 py-2 bg-black/5 border-none rounded-xl focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none text-sm"
+              placeholder="SEARCHING DATABASE..."
+              class="w-full pl-12 pr-10 py-3 bg-transparent border-2 border-current rounded-none focus:ring-4 focus:ring-current/20 transition-all outline-none text-xl uppercase"
             />
-            <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-black/5 rounded-full transition-colors">
-              <i data-lucide="x" class="w-3 h-3 text-black/40"></i>
+            <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-current hover:text-black transition-colors">
+              <i data-lucide="delete" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
       </nav>
 
       <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Status Bar -->
+        <div id="status-bar" class="flex justify-between items-center mb-8 border-b border-current/30 pb-2 text-2xl uppercase tracking-widest">
+          <div id="nav-tabs" class="flex gap-8">
+            <span class="opacity-50">STAT</span>
+            <span class="border-b-4 border-current pb-1">INV</span>
+            <span class="opacity-50">DATA</span>
+            <span class="opacity-50">MAP</span>
+            <span class="opacity-50">RADIO</span>
+          </div>
+          <div id="clock" class="font-bold">12:00 PM</div>
+        </div>
+
         <!-- Search Results Header -->
-        <div id="search-header" class="hidden mb-6 flex items-center gap-2 text-black/40 text-sm font-medium">
-          <i data-lucide="search" class="w-4 h-4"></i>
-          <span>Showing results for "<span id="search-term" class="text-black"></span>"</span>
-          <span id="results-count" class="ml-auto"></span>
+        <div id="search-header" class="hidden mb-6 flex items-center gap-2 text-xl font-medium uppercase">
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          <span>QUERY: "<span id="search-term"></span>"</span>
+          <span id="results-count" class="ml-auto opacity-70"></span>
         </div>
 
         <!-- Categories -->
-        <div id="categories-container" class="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar mb-8">
+        <div id="categories-container" class="flex items-center gap-4 overflow-x-auto pb-6 no-scrollbar mb-8">
           <!-- Categories will be injected here -->
         </div>
 
         <!-- Games Grid -->
-        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           <!-- Games will be injected here -->
         </div>
 
         <!-- Empty State -->
-        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-black/40">
-          <i data-lucide="layout-grid" class="w-12 h-12 mb-4 opacity-20"></i>
-          <p class="text-lg font-medium">No games found matching your search.</p>
+        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 opacity-50">
+          <i data-lucide="alert-triangle" class="w-16 h-16 mb-4"></i>
+          <p id="empty-text" class="text-3xl font-bold uppercase tracking-widest">NO DATA FOUND</p>
         </div>
       </main>
 
       <!-- Game Player Modal -->
-      <div id="game-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-6xl h-full max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-black/5">
+      <div id="game-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/95">
+        <div id="modal-container" class="bg-black w-full max-w-6xl h-full max-h-[90vh] border-4 border-current flex flex-col shadow-[0_0_30px_currentColor]">
+          <div class="flex items-center justify-between px-6 py-4 border-b-2 border-current">
             <div class="flex items-center gap-4">
-              <button id="close-modal-btn" class="p-2 hover:bg-black/5 rounded-xl transition-colors">
-                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+              <button id="close-modal-btn" class="p-2 border border-current hover:bg-current hover:text-black transition-colors">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
               </button>
               <div>
-                <h2 id="modal-title" class="font-bold text-lg leading-none mb-1"></h2>
-                <p id="modal-category" class="text-xs text-black/40 font-medium uppercase tracking-wider"></p>
+                <h2 id="modal-title" class="font-bold text-3xl leading-none mb-1 uppercase tracking-tighter"></h2>
+                <p id="modal-category" class="text-sm opacity-70 uppercase tracking-[0.2em]"></p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <a id="modal-external" href="#" target="_blank" class="p-2 hover:bg-black/5 rounded-xl transition-colors text-black/40 hover:text-black">
-                <i data-lucide="external-link" class="w-5 h-5"></i>
+            <div class="flex items-center gap-4">
+              <a id="modal-external" href="#" target="_blank" class="p-2 border border-current hover:bg-current hover:text-black transition-colors">
+                <i data-lucide="external-link" class="w-6 h-6"></i>
               </a>
-              <button id="close-modal-x" class="p-2 hover:bg-red-50 hover:text-red-500 rounded-xl transition-colors">
-                <i data-lucide="x" class="w-5 h-5"></i>
+              <button id="close-modal-x" class="p-2 border border-current hover:bg-red-500 hover:text-black transition-colors">
+                <i id="close-icon" data-lucide="power" class="w-6 h-6"></i>
               </button>
             </div>
           </div>
           <div class="flex-1 bg-black relative">
-            <iframe id="game-iframe" class="w-full h-full border-none" allowfullscreen></iframe>
+            <div id="modal-frame" class="absolute inset-0 pointer-events-none border-[20px] border-black z-10"></div>
+            <iframe id="game-iframe" class="w-full h-full border-none grayscale contrast-125 brightness-75" allowfullscreen></iframe>
           </div>
-          <div class="px-6 py-4 bg-gray-50 flex items-center justify-between">
-            <div class="flex items-center gap-4 text-sm text-black/60">
-              <div class="flex items-center gap-1">
-                <i data-lucide="maximize-2" class="w-4 h-4"></i>
-                <span>Full Screen Supported</span>
+          <div class="px-6 py-4 bg-black flex items-center justify-between border-t-2 border-current">
+            <div class="flex items-center gap-4 text-xl uppercase tracking-widest">
+              <div class="flex items-center gap-2">
+                <i id="status-icon" data-lucide="cpu" class="w-5 h-5"></i>
+                <span id="status-text">SYSTEM ACTIVE</span>
               </div>
             </div>
-            <div id="modal-id" class="text-xs font-mono text-black/30"></div>
+            <div id="modal-id" class="text-sm opacity-50"></div>
           </div>
         </div>
       </div>
 
       <!-- Footer -->
-      <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-black/5 mt-12">
+      <footer class="max-w-7xl mx-auto px-6 py-12 border-t-2 border-current mt-12 mb-8">
         <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div class="flex items-center gap-2 opacity-50 grayscale hover:grayscale-0 transition-all cursor-default">
-            <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <i data-lucide="gamepad-2" class="text-white w-5 h-5"></i>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 border border-current flex items-center justify-center">
+              <i id="footer-icon" data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
-            <span class="font-bold tracking-tight">NEXUSGAMES</span>
+            <span id="footer-text" class="font-bold text-2xl tracking-widest uppercase">VAULT-TEC OS v4.0</span>
           </div>
-          <div class="flex gap-8 text-sm font-medium text-black/40">
-            <a href="#" class="hover:text-emerald-500 transition-colors">Privacy Policy</a>
-            <a href="#" class="hover:text-emerald-500 transition-colors">Terms of Service</a>
-            <a href="#" class="hover:text-emerald-500 transition-colors">Contact</a>
+          <div class="flex gap-12 text-xl uppercase tracking-widest">
+            <a href="#" class="hover:underline">PRIVACY</a>
+            <a href="#" class="hover:underline">TERMS</a>
+            <a href="#" class="hover:underline">HELP</a>
           </div>
-          <p class="text-sm text-black/30">© 2024 Nexus Games. All rights reserved.</p>
+          <p id="footer-date" class="text-lg opacity-50 uppercase">EST. 2077</p>
         </div>
       </footer>
     </div>

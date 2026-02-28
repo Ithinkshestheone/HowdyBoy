@@ -1,30 +1,45 @@
-// Nexus Games - Vanilla JS Implementation
-let games = [];
-let filteredGames = [];
-let currentCategory = 'All';
-let searchQuery = '';
+let currentTheme = localStorage.getItem('theme') || 'pipboy';
 
-// DOM Elements
-const gamesGrid = document.getElementById('games-grid');
-const categoriesContainer = document.getElementById('categories-container');
-const searchInput = document.getElementById('search-input');
-const clearSearchBtn = document.getElementById('clear-search');
-const searchHeader = document.getElementById('search-header');
-const searchTermDisplay = document.getElementById('search-term');
-const resultsCountDisplay = document.getElementById('results-count');
-const emptyState = document.getElementById('empty-state');
-const gameModal = document.getElementById('game-modal');
-const gameIframe = document.getElementById('game-iframe');
-const modalTitle = document.getElementById('modal-title');
-const modalCategory = document.getElementById('modal-category');
-const modalId = document.getElementById('modal-id');
-const modalExternal = document.getElementById('modal-external');
+// Theme Configs
+const themes = {
+  pipboy: {
+    title: 'PIP-BOY 3000',
+    subtitle: 'VAULT-TEC INDUSTRIES',
+    searchPlaceholder: 'SEARCHING DATABASE...',
+    emptyText: 'NO DATA FOUND',
+    footerText: 'VAULT-TEC OS v4.0',
+    footerDate: 'EST. 2077',
+    logoIcon: 'radio',
+    searchIcon: 'terminal',
+    statusIcon: 'cpu',
+    footerIcon: 'shield-check',
+    closeIcon: 'power',
+    btnClass: 'pip-button',
+    statusText: 'SYSTEM ACTIVE'
+  },
+  echo: {
+    title: 'ECHO DEVICE v2.0',
+    subtitle: 'DAHL CORPORATION',
+    searchPlaceholder: 'SCANNING FOR ECHO LOGS...',
+    emptyText: 'NO ECHO DATA DETECTED',
+    footerText: 'ECHO-NET INTERFACE',
+    footerDate: 'PANDORA - 2853',
+    logoIcon: 'zap',
+    searchIcon: 'search',
+    statusIcon: 'activity',
+    footerIcon: 'database',
+    closeIcon: 'x-circle',
+    btnClass: 'echo-button',
+    statusText: 'HOLOGRAPHIC LINK ESTABLISHED'
+  }
+};
 
 // Initialize
 async function init() {
   try {
     const response = await fetch('./src/data/games.json');
     games = await response.json();
+    applyTheme(currentTheme);
     renderCategories();
     updateFilters();
     lucide.createIcons();
@@ -33,15 +48,43 @@ async function init() {
   }
 }
 
+function applyTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('theme', theme);
+  document.body.className = `min-h-screen theme-${theme}`;
+  
+  const config = themes[theme];
+  
+  // Update Text
+  document.getElementById('app-title').textContent = config.title;
+  document.getElementById('app-subtitle').textContent = config.subtitle;
+  document.getElementById('search-input').placeholder = config.searchPlaceholder;
+  document.getElementById('empty-text').textContent = config.emptyText;
+  document.getElementById('footer-text').textContent = config.footerText;
+  document.getElementById('footer-date').textContent = config.footerDate;
+  document.getElementById('status-text').textContent = config.statusText;
+  
+  // Update Icons
+  document.getElementById('logo-icon').setAttribute('data-lucide', config.logoIcon);
+  document.getElementById('search-icon').setAttribute('data-lucide', config.searchIcon);
+  document.getElementById('status-icon').setAttribute('data-lucide', config.statusIcon);
+  document.getElementById('footer-icon').setAttribute('data-lucide', config.footerIcon);
+  document.getElementById('close-icon').setAttribute('data-lucide', config.closeIcon);
+  
+  lucide.createIcons();
+  renderCategories();
+  renderGames();
+}
+
 function renderCategories() {
   const categories = ['All', ...new Set(games.map(g => g.category))];
+  const btnClass = themes[currentTheme].btnClass;
+  
   categoriesContainer.innerHTML = categories.map(cat => `
     <button
       onclick="setCategory('${cat}')"
-      class="category-btn px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-        currentCategory === cat
-          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-          : 'bg-white text-black/60 hover:bg-black/5 border border-black/5'
+      class="${btnClass} px-6 py-2 text-xl font-bold tracking-widest transition-all whitespace-nowrap ${
+        currentCategory === cat ? 'active' : ''
       }"
       data-category="${cat}"
     >
@@ -69,8 +112,10 @@ function updateFilters() {
   if (searchQuery) {
     clearSearchBtn.classList.remove('hidden');
     searchHeader.classList.remove('hidden');
-    searchTermDisplay.textContent = searchQuery;
-    resultsCountDisplay.textContent = `${filteredGames.length} games found`;
+    searchTermDisplay.textContent = searchQuery.toUpperCase();
+    resultsCountDisplay.textContent = currentTheme === 'pipboy' 
+      ? `[${filteredGames.length} RECORDS FOUND]`
+      : `> ${filteredGames.length} ENTRIES LOCATED`;
   } else {
     clearSearchBtn.classList.add('hidden');
     searchHeader.classList.add('hidden');
@@ -87,32 +132,47 @@ function renderGames() {
     gamesGrid.classList.remove('hidden');
     emptyState.classList.add('hidden');
     
+    const isPip = currentTheme === 'pipboy';
+    const cardClass = isPip 
+      ? "bg-[#0a0a0a] border-2 border-[#1aff1a] shadow-[0_0_10px_rgba(26,255,26,0.1)] hover:shadow-[0_0_20px_rgba(26,255,26,0.3)]"
+      : "bg-[#050a10] border-2 border-[#00ffff] shadow-[0_0_15px_rgba(0,255,255,0.1)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] glitch-hover";
+    
+    const imgClass = isPip
+      ? "grayscale contrast-125 brightness-75 group-hover:brightness-100"
+      : "contrast-110 brightness-90 group-hover:brightness-110 hue-rotate-[-10deg] group-hover:hue-rotate-0";
+
+    const overlayClass = isPip ? "bg-[#1aff1a]/20" : "bg-[#00ffff]/10";
+    const accentColor = isPip ? "#1aff1a" : "#00ffff";
+    const initText = isPip ? "INITIALIZE" : "ACCESS LOG";
+
     gamesGrid.innerHTML = filteredGames.map(game => `
       <div
         onclick="openGame('${game.id}')"
-        class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-xl transition-all cursor-pointer transform hover:-translate-y-1"
+        class="group ${cardClass} transition-all duration-300 cursor-pointer transform hover:-translate-y-2 overflow-hidden"
       >
-        <div class="aspect-[4/3] overflow-hidden relative">
+        <div class="aspect-[4/3] overflow-hidden relative border-b-2 border-current">
           <img
             src="${game.thumbnail}"
             alt="${game.title}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            class="w-full h-full object-cover transform ${imgClass} group-hover:scale-110 transition-all duration-700 ease-out"
             referrerpolicy="no-referrer"
           />
-          <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-              <i data-lucide="gamepad-2" class="w-6 h-6 text-emerald-500"></i>
+          <!-- Overlay -->
+          <div class="absolute inset-0 ${overlayClass} opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[1px]">
+            <div class="px-4 py-2 border-2 border-current bg-black text-current font-bold text-xl tracking-widest transform scale-75 group-hover:scale-100 transition-transform duration-300">
+              ${initText}
             </div>
           </div>
+          <!-- Category Tag -->
           <div class="absolute top-3 left-3">
-            <span class="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[10px] font-bold uppercase tracking-wider text-black/60 border border-black/5">
+            <span class="px-3 py-1 bg-black border border-current text-xs font-bold uppercase tracking-[0.2em] text-current">
               ${game.category}
             </span>
           </div>
         </div>
-        <div class="p-4">
-          <h3 class="font-bold text-lg mb-1 group-hover:text-emerald-600 transition-colors">${game.title}</h3>
-          <p class="text-black/50 text-sm line-clamp-2 leading-relaxed">${game.description}</p>
+        <div class="p-5">
+          <h3 class="font-bold text-2xl mb-1 uppercase tracking-tighter group-hover:text-white transition-colors duration-300">${game.title}</h3>
+          <p class="opacity-60 text-lg line-clamp-2 leading-none uppercase group-hover:opacity-100 transition-colors duration-300">${game.description}</p>
         </div>
       </div>
     `).join('');
@@ -120,6 +180,26 @@ function renderGames() {
     lucide.createIcons();
   }
 }
+
+// Theme Toggle Listener
+document.getElementById('toggle-theme').addEventListener('click', () => {
+  const nextTheme = currentTheme === 'pipboy' ? 'echo' : 'pipboy';
+  applyTheme(nextTheme);
+});
+
+// Clock Function
+function updateClock() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+  document.getElementById('clock').textContent = `${displayHours}:${displayMinutes} ${ampm}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
 
 window.openGame = (id) => {
   const game = games.find(g => g.id === id);

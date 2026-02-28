@@ -1,50 +1,26 @@
 [
   {
-    "id": "2048",
-    "title": "2048",
-    "description": "Join the numbers and get to the 2048 tile!",
-    "thumbnail": "https://picsum.photos/seed/2048/400/300",
-    "iframeUrl": "https://play2048.co/",
-    "category": "Puzzle"
-  },
-  {
-    "id": "tetris",
-    "title": "Tetris",
-    "description": "The classic block-stacking puzzle game.",
-    "thumbnail": "https://picsum.photos/seed/tetris/400/300",
-    "iframeUrl": "https://tetris.com/play-tetris",
-    "category": "Classic"
-  },
-  {
-    "id": "snake",
-    "title": "Snake",
-    "description": "Eat the apples and grow as long as possible.",
-    "thumbnail": "https://picsum.photos/seed/snake/400/300",
-    "iframeUrl": "https://www.google.com/logos/2010/pacman10-i.html",
-    "category": "Arcade"
-  },
-  {
-    "id": "paper-io",
-    "title": "Paper.io 2",
-    "description": "Capture as much territory as possible.",
-    "thumbnail": "https://picsum.photos/seed/paperio/400/300",
-    "iframeUrl": "https://paper-io.com/",
-    "category": "IO"
-  },
-  {
-    "id": "slope",
-    "title": "Slope",
-    "description": "Roll down the slope for as long as possible.",
-    "thumbnail": "https://picsum.photos/seed/slope/400/300",
-    "iframeUrl": "https://krunker.io/",
+    "id": "snow-rider-3d",
+    "title": "Snow Rider 3D",
+    "description": "Experience the thrill of downhill sledding in this fast-paced 3D racing game. Dodge obstacles and collect gifts!",
+    "thumbnail": "https://picsum.photos/seed/snowrider/400/300",
+    "iframeUrl": "https://html5.gamedistribution.com/rvvASMiM/3b79a8537ebc414fb4f9672a9b8c68c8/index.html?utm_source=gamedistribution.com&utm_medium=snow-rider-3d&utm_campaign=block-and-redirect&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL2h0bWw1LmdhbWVkaXN0cmlidXRpb24uY29tLzNiNzlhODUzN2ViYzQxNGZiNGY5NjcyYTliOGM2OGM4Lz91dG1fc291cmNlPWdhbWVkaXN0cmlidXRpb24uY29tJnV0bV9tZWRpdW09c25vdy1yaWRlci0zZCZ1dG1fY2FtcGFpZ249YmxvY2stYW5kLXJlZGlyZWN0IiwicGFyZW50RG9tYWluIjoiaHRtbDUuZ2FtZWRpc3RyaWJ1dGlvbi5jb20iLCJ0b3BEb21haW4iOiJodG1sNS5nYW1lZGlzdHJpYnV0aW9uLmNvbSIsImhhc0ltcHJlc3Npb24iOmZhbHNlLCJsb2FkZXJFbmFibGVkIjp0cnVlLCJob3N0IjoiaHRtbDUuZ2FtZWRpc3RyaWJ1dGlvbi5jb20iLCJ2ZXJzaW9uIjoiMS41LjE4In0%253D",
     "category": "Action"
   },
   {
-    "id": "flappy-bird",
-    "title": "Flappy Bird",
-    "description": "Fly through the pipes without crashing.",
-    "thumbnail": "https://picsum.photos/seed/flappy/400/300",
-    "iframeUrl": "https://flappybird.io/",
+    "id": "itch-game-1",
+    "title": "Itch.io Adventure",
+    "description": "A unique and engaging adventure game hosted on itch.io. Explore new worlds and challenges!",
+    "thumbnail": "https://picsum.photos/seed/adventure/400/300",
+    "iframeUrl": "https://html.itch.zone/html/16468668/HTML/index.html?v=1771014379",
     "category": "Arcade"
+  },
+  {
+    "id": "atari-breakout",
+    "title": "Atari Breakout",
+    "description": "The legendary Atari Breakout. Use your paddle to destroy all the bricks and clear the level!",
+    "thumbnail": "https://picsum.photos/seed/atari/400/300",
+    "iframeUrl": "https://237012155-atari-embeds.googleusercontent.com/embeds/16cb204cf3a9d4d223a0a3fd8b0eec5d/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.PCvl17LujMs.O%2Fd%3D1%2Frs%3DAHpOoo-sAn5Asuf3MvShXCH_dsg8tE46Tw%2Fm%3D__features__",
+    "category": "Classic"
   }
 ]
