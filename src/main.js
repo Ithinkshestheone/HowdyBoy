@@ -1,4 +1,24 @@
 let currentTheme = localStorage.getItem('theme') || 'pipboy';
+let games = [];
+let filteredGames = [];
+let currentCategory = 'All';
+let searchQuery = '';
+
+// DOM Elements
+const gamesGrid = document.getElementById('games-grid');
+const categoriesContainer = document.getElementById('categories-container');
+const searchInput = document.getElementById('search-input');
+const clearSearchBtn = document.getElementById('clear-search');
+const searchHeader = document.getElementById('search-header');
+const searchTermDisplay = document.getElementById('search-term');
+const resultsCountDisplay = document.getElementById('results-count');
+const emptyState = document.getElementById('empty-state');
+const gameModal = document.getElementById('game-modal');
+const gameIframe = document.getElementById('game-iframe');
+const modalTitle = document.getElementById('modal-title');
+const modalCategory = document.getElementById('modal-category');
+const modalId = document.getElementById('modal-id');
+const modalExternal = document.getElementById('modal-external');
 
 // Theme Configs
 const themes = {
@@ -77,20 +97,41 @@ function applyTheme(theme) {
 }
 
 function renderCategories() {
+  const categoryCounts = games.reduce((acc, game) => {
+    acc[game.category] = (acc[game.category] || 0) + 1;
+    return acc;
+  }, { 'All': games.length });
+
   const categories = ['All', ...new Set(games.map(g => g.category))];
   const btnClass = themes[currentTheme].btnClass;
+  const isPip = currentTheme === 'pipboy';
   
-  categoriesContainer.innerHTML = categories.map(cat => `
-    <button
-      onclick="setCategory('${cat}')"
-      class="${btnClass} px-6 py-2 text-xl font-bold tracking-widest transition-all whitespace-nowrap ${
-        currentCategory === cat ? 'active' : ''
-      }"
-      data-category="${cat}"
-    >
-      ${cat}
-    </button>
-  `).join('');
+  const headerHtml = isPip 
+    ? `<div class="w-full mb-4 text-xl opacity-50 tracking-[0.4em] border-b border-[#1aff1a]/20 pb-1">SELECT_CATEGORY</div>`
+    : `<div class="w-full mb-4 text-lg font-bold tracking-widest text-[#00ffff]/40 flex items-center gap-2">
+        <i data-lucide="filter" class="w-4 h-4"></i> FILTER_BY_GENRE
+      </div>`;
+
+  categoriesContainer.innerHTML = `
+    ${headerHtml}
+    <div class="flex items-center gap-4 overflow-x-auto pb-2 no-scrollbar w-full">
+      ${categories.map(cat => `
+        <button
+          onclick="setCategory('${cat}')"
+          class="${btnClass} px-6 py-2 text-xl font-bold tracking-widest transition-all whitespace-nowrap relative group/btn ${
+            currentCategory === cat ? 'active' : ''
+          }"
+          data-category="${cat}"
+        >
+          ${cat}
+          <span class="ml-2 opacity-40 text-sm align-top">[${categoryCounts[cat]}]</span>
+          ${!isPip && currentCategory === cat ? '<div class="absolute -bottom-1 left-0 w-full h-1 bg-[#00ffff] shadow-[0_0_10px_#00ffff]"></div>' : ''}
+        </button>
+      `).join('')}
+    </div>
+  `;
+  
+  if (!isPip) lucide.createIcons();
 }
 
 window.setCategory = (category) => {
